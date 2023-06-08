@@ -1,9 +1,14 @@
 from transaction import Transaction
+from db_helper import insert_to_database
 
 trnsct_123 = Transaction()
 
 while True:
-    print('''\nWelcome!
+    print("")
+    print("=" * 30)
+    print("Welcome to SuperCashier")
+    print("=" * 30)
+    print('''
     Please select the menu.
     1. Add item to cart
     2. Check order
@@ -52,11 +57,13 @@ while True:
         trnsct_123.reset_transaction()
 
     elif user_input == "8":
-        trnsct_123.check_out()
+        checkout_data = trnsct_123.check_out()
+        #insert check outed item data to database
+        insert_to_database("checkout.db", checkout_data)
         
     elif user_input == "9":
         print("Thank you for shopping here.")
-        print("Clossing the program ...")
+        print("Closing the program ...")
         break
     
     else:
