@@ -47,10 +47,16 @@ class Transaction:
         else:
             #error handling for casting quantity and price from string to integer.
             try:
-                self.cart[name] = [int(qty), int(price), int(qty)*int(price)]
+                int_qty = int(qty)
+                int_price = int(price)
+
+                #raising exception when qty or price are 0
+                if int_price == 0 or int_qty == 0:
+                    raise Exception
+                self.cart[name] = [int_qty, int_price, int_price * int_qty]
                 print(f'{name} is successfully added to cart.')
             except:
-                print("Price and quantity must be integer")
+                print("Price and quantity must be integer larger than 0")
 
     def check_order(self):
         """
@@ -95,12 +101,18 @@ class Transaction:
         """
         #error handling for casting new_price from string to integer
         try:
-            self.cart[name][1] = int(new_price)
+            int_newprice = int(new_price)
+
+            #raise exception when new price is 0
+            if int_newprice == 0:
+                raise Exception
+            
+            self.cart[name][1] = int_newprice
             #updating total amount
             self.cart[name][2] = self.cart[name][0] * self.cart[name][1]
             print(f'{name} price is updated to {new_price}')
         except:
-            print("Price must be integer")
+            print("Price must be integer larger than 0")
 
     def update_qty(self, name, new_qty):
         """
@@ -113,12 +125,18 @@ class Transaction:
         """
         try:
             #error handling for casting new_qty from string to integer
-            self.cart[name][0] = int(new_qty)
+            int_newqty = int(new_qty)
+            
+            #raise exception when new quantity is 0
+            if int_newqty == 0:
+                raise Exception
+            self.cart[name][0] = int_newqty
+
             #updating total amount
             self.cart[name][2] = self.cart[name][0] * self.cart[name][1]
             print(f'{name} quantity is updated to {new_qty}')
         except:
-            print("Quantity must be integer")
+            print("Quantity must be integer larger than 0")
 
 
     def delete_item(self, name):
