@@ -441,18 +441,18 @@ while True:
 1. Customer wants to add two items using add_item() method. The items will be added as follow:  
 - item name: Ayam goreng, qty: 2, unit price: 20000
 - item name: Pasta gigi, qty: 3, unit price: 150000  
-Output:
+Output:  
 ![test case 1](img/test_case_1.jpg)
 
 2. Customer wants to delete Pasta gigi from the cart using delete_item() method.  
-Output:
+Output:  
 ![test case 2](img/test_case_2.jpg)
 
 3. Customer wants to delete all items in the cart using reset_transaction() method.  
-Output:
+Output:  
 ![test case 3](img/test_case_3.jpg)
 
 4. After finishing shopping, the program will calculate total payment and discount.  
-Output:
+Output:  
 ![test case 4](img/test_case_4.jpg)
 ## Conclusion
