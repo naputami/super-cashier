@@ -67,7 +67,7 @@ To get started with this project, please follow the steps below:
 1. Install the required dependencies by ensuring that Python, SQLite3, and PrettyTable are installed on your local computer.
 2. Clone this repository to your local machine using your preferred method. This can be done by running the following command in your terminal  
 ```
-git clone <repository_url>
+git clone https://github.com/naputami/SuperCashier-Pacmann.git
 ```
 3. Once the repository is cloned, navigate to the project's directory in your terminal.
 4. To launch the program, run the main.py file using the following command:  
