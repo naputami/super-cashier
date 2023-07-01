@@ -13,13 +13,13 @@ To ensure proper functionality, the Super Cashier App requires the following pac
 
 ## Program Objective
 The objectives of the program are as follows:  
-1. Add items to the cart, including their quantity and unit price.
-2. Search for item names within the cart.
-3. Delete items from the cart.
-4. Update the name, price, or quantity of items in the cart.
-5. Display the items currently in the cart.
-6. Calculate total payment and discount.
-7. Insert name, quantity, and price of check outed item to SQLite database.
+1. Adding items to the cart, including their quantity and unit price.
+2. Searching for item names within the cart.
+3. Deleting an item or all items from the cart.
+4. Updating the name, price, or quantity of items in the cart.
+5. Displaying the items currently in the cart.
+6. Calculating total payment and discount.
+7. Inserting name, quantity, and price of check outed item to SQLite database.
 
 
 ## Code Flow
