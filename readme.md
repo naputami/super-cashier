@@ -39,34 +39,28 @@ The program follows a specific flow, as outlined below:
 The flow chart of the program is presented below.
 ```mermaid
 flowchart TD
-      A([start]) --> B[input item with add_item]
-      B --> C{add more item}
-      C --> |yes| B
-			C --> |no| D{update item}
-			D --> |yes| E[search item name to be updated]
-			E --> F{found item}
-			F --> |yes| G[update item name, quantity, or price]
-			F --> |no| E
-			D --> |no| H{delete an item}
-			G --> H
-			H --> |yes| I[search item name to be deleted]
-			I --> J{found item}
-			J --> |yes| K[delete item with delete_item]
-			J --> |no| I
-			H --> |no| L{reset transaction}
-			K --> L
-			L --> |yes| M[reset transaction with reset_transaction]
-			M --> N
-			L --> |no| N{check order}
-			N --> |yes| O[check order with check_order]
-			N --> |no| B
-			O --> P{is the order ok?}
-			P --> |yes|Q{check out item}
-			P --> |no| B
-			Q --> |yes| R[calculate total price and discount with check_out]
-			Q --> |no| B
-			R --> S[input data to database with insert_to_database]
-			S --> T([finish])
+	A([start]) --> B[input item with add_item]
+	B --> C{add more item}
+	C --> |yes| B
+	C --> |no| D{update item}
+	D --> |yes| E[update item name, quantity, or price]
+	D --> |no| F{delete an item}
+	E --> F
+	F --> |yes| G[delete item with delete_item]
+	F --> |no| H{reset transaction}
+	G --> H
+	H --> |yes| I[reset transaction with reset_transaction]
+	H --> |no| K{check order}
+	I --> K
+	K --> |yes| L[check order with check_order]
+	K --> |no| C
+	L --> M{is the order ok?}
+	M --> |yes|N{check out item}
+	M --> |no| C
+	N --> |yes| O[calculate total price and discount with check_out]
+	N --> |no| C
+	O --> P[input data to database with insert_to_database]
+	P --> Q([finish])
 ```
 
 ## Code Explanation
