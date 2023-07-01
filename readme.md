@@ -62,6 +62,19 @@ flowchart TD
 	O --> P[input data to database with insert_to_database]
 	P --> Q([finish])
 ```
+## How To Run This Program
+To get started with this project, please follow the steps below:
+1. Install the required dependencies by ensuring that Python, SQLite3, and PrettyTable are installed on your local computer.
+2. Clone this repository to your local machine using your preferred method. This can be done by running the following command in your terminal  
+```
+git clone <repository_url>
+```
+3. Once the repository is cloned, navigate to the project's directory in your terminal.
+4. To launch the program, run the main.py file using the following command:  
+```
+python main.py
+```
+By following these steps, you will be able to install the necessary dependencies, clone the repository, and run the program on your local machine.
 
 ## Code Explanation
 ### import required library
@@ -450,3 +463,6 @@ Output:
 Output:  
 ![test case 4](img/test_case_4.jpg)
 ## Conclusion
+The program successfully achieves its intended objectives and runs as expected. Nevertheless, there are areas identified for improvement:  
+1. Database Enhancement: Enhance the database to allow for more detailed storage of customer and transaction data.
+2. User Interface Refinement: Address the user interface to ensure a more user-friendly and simplified application experience.
