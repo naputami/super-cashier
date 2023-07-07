@@ -14,28 +14,14 @@ To ensure proper functionality, the Super Cashier App requires the following pac
 ## Program Objective
 The objectives of the program are as follows:  
 1. Adding items to the cart, including their quantity and unit price.
-2. Searching for item names within the cart.
-3. Deleting an item or all items from the cart.
-4. Updating the name, price, or quantity of items in the cart.
-5. Displaying the items currently in the cart.
-6. Calculating total payment and discount.
-7. Inserting name, quantity, and price of check outed item to SQLite database.
+2. Deleting an item or all items from the cart.
+3. Updating the name, price, or quantity of items in the cart.
+4. Displaying the items currently in the cart.
+5. Calculating total payment and discount.
+6. Inserting name, quantity, and price of check outed item to SQLite database.
 
 
 ## Code Flow
-The program follows a specific flow, as outlined below:
-1. Initialization: The program starts by initializing the Transaction class, setting up the necessary components.
-2. Menu Options: The customer is presented with a menu containing various options to choose from:
-	- Add Item: The customer can add items to the cart by providing the item's name, quantity, and price.
-	- Check Order: This option displays the items currently in the cart, allowing the customer to review their selection.
-	- Update Item Name: The customer can update the name of an item by specifying the item's current name and the desired new name.
-	- Update Item Price: This option enables the customer to update the price of an item by entering the item's name and the new price.
-	- Update Item Quantity: The customer can adjust the quantity of an item by entering the item's name and the desired new quantity.
-	- Delete Item: If the customer wants to remove an item from the cart, they can select this option and provide the item's name.
-	- Reset Transaction: Choosing this option will clear the entire cart.
-	- Checkout Item: When the customer is ready to check out, they can select this option. The program will calculate the total price and any applicable discounts. The name, price, and quantity of items being checked out will also be added to an SQLite database.
-	- Quit: If the customer wishes to exit the program, they can choose this option.
-
 The flow chart of the program is presented below.
 ```mermaid
 flowchart TD
@@ -59,7 +45,7 @@ flowchart TD
 	M --> |no| C
 	N --> |yes| O[calculate total price and discount with check_out]
 	N --> |no| C
-	O --> P[input data to database with insert_to_database]
+	O --> P[input data to database with insert_to_table]
 	P --> Q([finish])
 ```
 ## How To Run This Program
@@ -77,198 +63,209 @@ python main.py
 By following these steps, you will be able to install the necessary dependencies, clone the repository, and run the program on your local machine.
 
 ## Code Explanation
-### import required library
-```
-from prettytable import PrettyTable
-from datetime import datetime
-import sqlite3
-from sqlite3 import Error
-```
-### Transaction Class Method
-#### constructor
-```
+### Script
+1. transaction.py: modlue for transaction class which contains functions for fulfilling program's objectives.
+2. helpers.py: module for helper functions
+3. main.py: module for initializing transaction class and displaying menu to user
+### snippet code
+#### Transaction Class constructor
+```python
 def __init__(self):
-        """
-        Constructor for creating an attribute named cart. 
-        The attribute is a dictionary with item name as key and a list as its value.
-        The list contains information about quantity, price, and item payment amount.
-        """
-        self.cart = {}
+    """
+    Constructor for creating an attribute named cart. 
+    The attribute is a list of dictionaries which contains information about item name, price, quantity, and amount
+    """
+    self.cart = []
 ```
-#### search_item(name)
+#### insert_to_table()
+```python
+def insert_to_table(self, dbfile):
+    """
+    A function for inserting check outed item data to sqlite3 database.
+    Args:
+        -dbfile (str) : name of database file
+    Return: - 
+    """
+    #create list of tuples of dictionaries' values in cart
+    data =[tuple(item.values()) for item in self.cart]
+
+    #error handling for inserting record to database
+    try:
+        connection = sqlite3.connect(dbfile)
+        cursor = connection.cursor()
+
+        cursor.execute(''' CREATE TABLE IF NOT EXISTS transactions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    item_name VARCHAR(50) NOT NULL,
+                    quantity INTEGER NOT NULL,
+                    unit_price INTEGER NOT NULL,
+                    amount INTEGER NOT NULL,
+                    discount INTEGER NOT NULL,
+                    new_amount INTEGER NOT NULL
+                )
+        ''')
+
+        cursor.executemany("INSERT INTO transactions(item_name, unit_price, quantity, amount, discount, new_amount) VALUES (?,?,?,?,?,?)", data)
+        print("Check outed item is succesfully added to database!")
+        
+        connection.commit()
+        connection.close()
+    except sqlite3.Error as e:
+        print(e)
 ```
-def search_name(self, name):
-	"""
-	A method for ensuring the searched name is available in cart attributes
-	Args:
-	    name (str)
-	return
-	    found (boolean)
-	"""
-	found = False
-	for key in self.cart:
-	    if key == name:
-		found = True
-		break
-	return found
-```
-#### show_item()
-```
-def show_order(self):
-	"""
-	A method for displaying information about item name, quantity, and payment amount in a table.
-	The table is generated by PrettyTable.
-	
-	Args: -
-	Return: -
-	"""
-	#print date and time
-	now = datetime.now()
-	formatted_date = now.strftime("%Y-%m-%d %H:%M:%S")
-	print(f'Date and Time: {formatted_date}')
-	print()
-	
-	table = PrettyTable()
-	table.field_names = ["item name", "quantity", "unit price", "amount"]
-	
-	for key, value in self.cart.items():
-	    row = [key] + value
-	    table.add_row(row)
-	    
-	print(table)
-```
-#### add_item(name, qty, price)
-```
+#### add_item()
+```python
 def add_item(self, name, qty, price):
-	"""
-	A method for adding item name, quantity, and price to cart.
-	Item name is key in cart attribute whose value is a list.
-	The list contains:
-	    - quantity (int) at index 0
-	    - price (int) at index 1
-	    - total amount (int) at index 2 that obtained from multiplication between quantity and price.
-	
-	Args:
-	    -name(str)
-	    -qty(str)
-	    -price(str)
-	
-	return: -
-	"""
-	
-	#ensuring that item name is inputted
-	if name == "":
-	    print("Item name cannot be empty.")
-	else:
-	    #error handling for casting quantity and price from string to integer.
-	    try:
-		int_qty = int(qty)
-		int_price = int(price)
-	
-		#raising exception when qty or price are smaller than 1
-		if int_price < 1 or int_qty < 1:
-		    raise Exception
-		self.cart[name] = [int_qty, int_price, int_price * int_qty]
-		print(f'{name} is successfully added to cart.')
-	    except:
-		print("Price and quantity must be integer and not smaller than 1")
+    """
+    A method for adding item name, quantity, and price to cart.
+    Args:
+        -name(str)
+        -qty(str)
+        -price(str)
+
+    return: -
+    """
+
+    #ensuring that item name is inputted
+    if name == "":
+        print("Item name cannot be empty.")
+    else:
+        #create dictionary for new item
+        new_item = {}
+        new_item["name"] = name
+        
+        #error handling for casting quantity and price from string to integer.
+        try:
+            int_price = int(price)
+            int_qty = int(qty)
+
+            #raise exception if price or quantity smaller than 0
+            if int_price < 1 or int_qty < 1:
+                raise Exception
+            
+            new_item["price"] = int(price)
+            new_item["quantity"] = int(qty)
+            new_item["amount"] = int(price) * int(qty)
+            self.cart.append(new_item)
+        except:
+            print("\nprice and quantity must be in integer and not smaller than 0!\n")
+
 ```
 #### check_order()
-```
+```python
 def check_order(self):
-	"""
-	A method for checking order. It will show information about items in cart.
-	
-	Args: -
-	Return: -
-	"""
-	if len(self.cart) == 0:
-	    print("The cart is empty. Please add an item.")
-	else:
-	    #show item in cart
-	    print("Items in cart.")
-	    self.show_order()
-```
-#### update_name(old_name, new_name)
-```
-def update_name(self, old_name, new_name):
-	"""
-	A method for updating item name in cart.
-	
-	Args:
-	    -old_name (str)
-	    -new_name (str)
-	"""
-	self.cart[new_name] = self.cart.pop(old_name)
-	print(f'{old_name} changed to {new_name}')
-```
-#### update_price(name, new_price)
-```
-def update_price(self, name, new_price):
-        """
-        A method for updating item price in cart.
+    """
+    A method for checking order. It will show information about items in cart.
 
-        Args:
-            -name (str)
-            -new_price (str)
-        Return: -
-        """
-        #error handling for casting new_price from string to integer
+    Args: -
+    Return: -
+    """
+    if len(self.cart) == 0:
+        print("The cart is empty. Please add an item.")
+    else:
+        show_date_time()
+        table = PrettyTable()
+        table.field_names = self.cart[0].keys()
+        for item in self.cart:
+            table.add_row([item["name"], change_currency(item["price"]), item["quantity"], change_currency(item["amount"])])
+        print(table)
+```
+#### update_item_name()
+```python
+def update_item_name(self, old_name, new_name):
+    """
+    A method for updating item name in cart.
+
+    Args:
+        -old_name (str)
+        -new_name (str)
+    """
+    item_index = find_index(self.cart, old_name)
+    if item_index != -1:
+        self.cart[item_index]["name"] = new_name
+        print(f'{old_name.title()} changed to {new_name.title()}')
+    else:
+        print(f'Can\'t found {old_name.title()} in cart. Please input another item name')
+```
+#### update_item_price()
+```python
+def update_item_price(self, name, new_price):
+    """
+    A method for updating item price in cart.
+
+    Args:
+        -name (str)
+        -new_price (str)
+    Return: -
+    """
+    item_index = find_index(self.cart, name)
+    if item_index != -1:
         try:
-            int_newprice = int(new_price)
+            #error handling for casting new_price from string to integer
+            int_new_price = int(new_price)
 
-            #raise exception when new price is 0
-            if int_newprice < 1:
+            #raise ecveption if new_price is smaller than 0
+            if int_new_price < 0:
                 raise Exception
             
-            self.cart[name][1] = int_newprice
-            #updating total amount
-            self.cart[name][2] = self.cart[name][0] * self.cart[name][1]
-            print(f'{name} price is updated to {new_price}')
+            self.cart[item_index]["price"] = int_new_price
+            self.cart[item_index]["amount"] = int_new_price * self.cart[item_index]["quantity"]
+            print(f'{name.title()} price changed to {new_price}')
         except:
-            print("Price must be integer not smaller than 1")
+            print("Price must be integer and not smaller than 0!")
+    else:
+        print(f'Can\'t found {name.title()} in cart. Please input another item name')
 ```
-#### update_qty(name, new_qty)
-```
-def update_qty(self, name, new_qty):
-        """
-        A method for updating item quantity in cart.
+#### update_item_qty()
+```python
+def update_item_qty(self, name, new_qty):
+    """
+    A method for updating item quantity in cart.
 
-        Args:
-            -name (str)
-            -new_qty (str)
-        Return: -
-        """
+    Args:
+        -name (str)
+        -new_qty (str)
+    Return: -
+    """
+    item_index = find_index(self.cart, name)
+    if item_index != -1:
         try:
             #error handling for casting new_qty from string to integer
-            int_newqty = int(new_qty)
+            int_new_qty = int(new_qty)
             
-            #raise exception when new quantity is 0
-            if int_newqty == 0:
+            #raise exception if new_qty is smaller than 0
+            if int_new_qty < 0:
                 raise Exception
-            self.cart[name][0] = int_newqty
-
-            #updating total amount
-            self.cart[name][2] = self.cart[name][0] * self.cart[name][1]
-            print(f'{name} quantity is updated to {new_qty}')
+            
+            self.cart[item_index]["quantity"] = int_new_qty
+            self.cart[item_index]["amount"] = int_new_qty * self.cart[item_index]["price"]
+            print(f'{name.title()} quantity changed to {new_qty}')
         except:
-            print("Quantity must be integer and not smaller than 1")
+            print("Quantity must be integer and not smaller than 0!")
+    else:
+        print(f'Can\'t found {name.title()} in cart. Please input another item name')
 ```
-#### delete_item(name)
-```
+#### delete_item()
+```python
 def delete_item(self, name):
-        """
-        A method for deleting an item in cart.
+    """
+    A method for deleting an item in cart.
 
-        Args:
-            -name (str)
-        Return: -
-        """
-        self.cart.pop(name)
-        print(f'{name} is deleted from cart.')
+    Args:
+        -name (str)
+    Return: -
+    """
+    item_index = find_index(self.cart, name)
+
+    if item_index != -1:
+        del self.cart[item_index]
+        print(f'{name.title()} is sucessfully removed from cart.')
+    else:
+        print(f'Can\'t found {name.title()} in cart. Please input another item name')
 ```
+
 #### reset_transaction()
-```
+```python
 def reset_transaction(self):
         """
         A method for clearing all items in cart.
@@ -280,174 +277,105 @@ def reset_transaction(self):
         print("All items are removed from cart.")
 ```
 #### check_out()
-```
+```python
 def check_out(self):
-        """
-        A method for: 
-            -showing check outed items
-            -calculate discount and total payment
-                if total payment > 500.0000, user will get 7% discount.
-                if total payment > 300.0000, user will get 6% discount.
-                if total payment > 200.0000, user will get 5% discount.
-            -return check outed item name, quantity, and price data for database processing.
-
-        Args: -
-        Return: list of tuples
-        """
-        if len(self.cart) == 0:
-            print("The cart is empty. Please add an item.")
-        else:
-            print("==========  RECEIPT ==========\n")
-            self.show_order()
-            subtotal = 0
-            disc = 0
-
-        #subtotal calculation
-            for item in self.cart:
-                subtotal += self.cart[item][2]
-            
-            #discount and total payment calculation
-            if subtotal > 500000:
-                disc = 0.07
-                total = subtotal - (subtotal * disc)
-            elif subtotal > 300000:
-                disc = 0.06
-                total = subtotal - (subtotal * disc)
-            elif subtotal > 200000:
-                disc = 0.05
-                total = subtotal - (subtotal * disc)
-            else:
-                total = subtotal
-        
-            print(f'\nSubtotal: {subtotal}\nDiscount: {disc:.0%}\nTotal: {total:.1f}')
-        
-            print("Thank you for shopping here!")
-
-            #creating list of tuples for database record
-            item_checkout = []
-            for key, value in self.cart.items():
-                """
-                key = item name (str)
-                value[0] = quantity (int)
-                value[1] = price (int)
-                value[2] = amount (int)
-                """
-                item_checkout.append((key, value[0], value[1], value[2]))
-            
-            return item_checkout
-```
-### def insert_to_database(dbfile, data)
-```
-def insert_to_database(dbfile, data):
     """
-    A function for inserting check outed item data to sqlite3 database.
-    Args:
-        -dbfile (str) : name of database file
-        -data (list of tuples) : check outed item data
-    Return: - 
+    A method for: 
+        -showing check outed items
+        -calculate discount and total payment
+            if total payment > 500.0000, user will get 7% discount.
+            if total payment > 300.0000, user will get 6% discount.
+            if total payment > 200.0000, user will get 5% discount.
+
+    Args: -
+    Return: -
     """
-    #error handling for inserting record to database
-    try:
-        connection = sqlite3.connect(dbfile)
-        cursor = connection.cursor()
-
-        cursor.execute(''' CREATE TABLE IF NOT EXISTS checkout_items (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    item_name TEXT NOT NULL,
-                    quantity INTEGER NOT NULL,
-                    unit_price INTEGER NOT NULL,
-                    amount INTEGER NOT NULL
-                )
-        ''')
-
-        cursor.executemany("INSERT INTO checkout_items(item_name, quantity, unit_price, amount) VALUES (?,?,?,?)", data)
-        print("Check outed item is succesfully added to database!")
-        
-        connection.commit()
-        connection.close()
-    except Error as e:
-        print(e)
-```
-### main.py
-```
-from transaction import Transaction
-from db_helper import insert_to_database
-
-#transaction class initialization
-trnsct_123 = Transaction()
-
-#Looping for displaying and running the menu
-while True:
-    print("")
-    print("=" * 30)
-    print("Welcome to SuperCashier")
-    print("=" * 30)
-    print('''
-    Please select the menu.
-    1. Add item to cart
-    2. Check order
-    3. Update item name in cart
-    4. Update item price in cart
-    5. Update item quantity in cart
-    6. Delete an item in cart
-    7. Reset Transaction.
-    8. Check out order
-    9. Quit program
-    ''')
-
-    user_input = input("chosen menu: ")
-    if user_input == "1":
-        item_name = input("item name: ").title()
-        item_price = input("item price: ")
-        item_qty = input("item quantity: ")
-        trnsct_123.add_item(item_name, item_qty, item_price)
-
-    elif user_input == "2":
-        trnsct_123.check_order()
-
-    elif user_input in ["3", "4", "5"]:
-        item_name_update = input("item name to be updated: ").title()
-        if trnsct_123.search_name(item_name_update): 
-            if user_input == "3":
-                new_name = input("new name: ").title()
-                trnsct_123.update_name(item_name_update, new_name)
-            elif user_input == "4":
-                new_price = input("new price: ")
-                trnsct_123.update_price(item_name_update, new_price)
-            else:
-                new_qty = input("new quantity: ")
-                trnsct_123.update_qty(item_name_update, new_qty)
-        else:
-            print(f'{item_name_update} is not found in cart.')
-
-    elif user_input == "6":
-        item_name_delete = input("item name to be deleted: ").title()
-        if trnsct_123.search_name(item_name_delete):
-            trnsct_123.delete_item(item_name_delete)
-        else:
-            print(f'{item_name_delete} is not found in cart.')
-
-    elif user_input == "7":
-        trnsct_123.reset_transaction()
-
-    elif user_input == "8":
-        checkout_data = trnsct_123.check_out()
-        #insert check outed item data to database
-        insert_to_database("checkout.db", checkout_data)
-        break
-        
-    elif user_input == "9":
-        print("Thank you for using this program")
-        print("Closing the program ...")
-        break
-    
+    if len(self.cart) == 0:
+        print("The cart is empty. Please add an item.")
     else:
-        print("Selected menu is not available. Please reinput available menu.")
+        for item in self.cart:
+            if item["amount"] > 500_000:
+                item.update(disc_calculation(0.07, item["amount"]))
+            elif item["amount"] > 300_000:
+                item.update(disc_calculation(0.06, item["amount"]))
+            elif item["amount"] > 200_000:
+                item.update(disc_calculation(0.05, item["amount"]))
+            else:
+                item.update(disc_calculation(0, item["amount"]))
+
+    total_payment = 0 
+    table = PrettyTable()
+    table.field_names = self.cart[0].keys()
+    for item in self.cart:
+        total_payment += item["amount after discount"]
+        table.add_row([item["name"], change_currency(item["price"]), item["quantity"], change_currency(item["amount"]), change_currency(item["discount"]), change_currency(item["amount after discount"])])
+    
+    print("="*35 , " RECEIPT ", "="*35)
+    print()
+    show_date_time()
+    print(table)
+    print(f'Total payment: {change_currency(total_payment)}')
+    print("Thank you for shopping here")
+```
+### show_date_time()
+```python
+def show_date_time():
+    """
+    A method for displaying date and time.
+
+    Args: -
+    Return: -
+    """
+    now = datetime.now()
+    formatted_date = now.strftime("%Y-%m-%d %H:%M:%S")
+    print(f'Date and Time: {formatted_date}\n')
+```
+### change_currency()
+```python
+def change_currency(price):
+    """
+    A method for changing price format to local currency
+
+    Args: price (int)
+    Return: price with local currency (str)
+    """
+    return locale.currency(price, grouping=True)
+```
+### find_index()
+```python
+def find_index(cart, name):
+    """
+    A method for searching for index of an item in the cart.
+    Args:
+        name (str)
+    return
+        index (int) of the item if available otherwise return -1
+    """
+    for item in cart:
+        if item["name"].lower() == name.lower():
+            return cart.index(item)
+    return -1 
+```
+### disc_calculation()
+```python
+def disc_calculation(percent, amount):
+    """
+    A method for calculating discount and total amount after discount
+
+    Args:
+        - percent (float)
+        - amount (int)
+    Return: 
+        - dictionary of discount and amount after discount
+    """
+    disc = int(percent * amount)
+    new_amount = amount - disc
+    return {"discount": disc, "amount after discount": new_amount}
 ```
 ## Test Case
 1. Customer wants to add two items using add_item() method. The items will be added as follow:  
 - item name: Ayam goreng, qty: 2, unit price: 20000
-- item name: Pasta gigi, qty: 3, unit price: 150000  
+- item name: Pasta gigi, qty: 3, unit price: 15000  
 Output:  
 ![test case 1](img/test_case_1.jpg)
 
