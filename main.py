@@ -18,7 +18,6 @@ while True:
     4. Delete an item in cart
     5. Reset Transaction.
     6. Check out order
-    7. Quit program
     ''')
 
     user_input = input("chosen menu: ")
@@ -29,7 +28,10 @@ while True:
             trnsct_123.add_item(item_name, item_qty, item_price)
 
     elif user_input == "2":
-        trnsct_123.check_order()
+        if len(trnsct_123.cart) == 0:
+            print("The cart is empty. Please add an item.")
+        else: 
+            trnsct_123.check_order()
 
     elif user_input == "3":
         print(''' 
@@ -67,11 +69,11 @@ while True:
         else:
             print("Please select a valid option!")
     elif user_input == "6":
-        trnsct_123.check_out()
-        trnsct_123.insert_to_table("checkout.db")
-        break
-    elif user_input == "7":
-        print("Closing the program")
-        break
+        if len(trnsct_123.cart) == 0:
+            print("The cart is empty. Please add an item.")
+        else:
+            trnsct_123.check_out()
+            trnsct_123.insert_to_table("checkout.db")
+            break
     else:
         print("Selected menu is not available. Please reinput available menu.")

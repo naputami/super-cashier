@@ -21,32 +21,40 @@ The objectives of the program are as follows:
 6. Inserting name, quantity, and price of check outed item to SQLite database.
 
 
-## Code Flow
+## Code Flow 
 The flow chart of the program is presented below.
 ```mermaid
 flowchart TD
-	A([start]) --> B[input item with add_item]
-	B --> C{add more item}
-	C --> |yes| B
-	C --> |no| D{update item}
-	D --> |yes| E[update item name, quantity, or price]
-	D --> |no| F{delete an item}
-	E --> F
-	F --> |yes| G[delete item with delete_item]
-	F --> |no| H{reset transaction}
-	G --> H
-	H --> |yes| I[reset transaction with reset_transaction]
-	H --> |no| K{check order}
-	I --> K
-	K --> |yes| L[check order with check_order]
-	K --> |no| C
-	L --> M{is the order ok?}
-	M --> |yes|N{check out item}
-	M --> |no| C
-	N --> |yes| O[calculate total price and discount with check_out]
-	N --> |no| C
-	O --> P[input data to database with insert_to_table]
-	P --> Q([finish])
+	A([start]) --> B[/input customer id/]
+	B --> C[/input item name, price, qty/]
+	C --> D[add item to cart with add_item]
+	D --> E[/The number of items in the cart is increasing/]
+	E --> F{add more item}
+	F --> |yes| C
+	F --> |no| G{update item}
+	G --> |yes| H[/input item name to be updated/]
+	H --> I[update item with update_item_name/price/qty]
+	I --> J[/an item in cart is updated/]
+	G --> |no|K{delete an item}
+	J --> K
+	K --> |yes| L[/input item name to be deleted/]
+	L --> M[delete item with delete_item]
+	M --> N[/an item in cart is deleted/]
+	K --> |no| O{reset transaction}
+	N --> O
+	O --> |yes| P[remove all item in cart with reset_transaction]
+	P --> Q[/empty cart/]
+	Q --> C
+	O --> |no| R{check order}
+	R --> |yes| S[check order with check_order]
+	S --> T[/list of items in cart/]
+	R --> |no|F
+	T --> U{is the order ok}
+	U --> |no| F
+	U --> |yes|V[calculate total payment and discount with check_out]
+	V --> W[/list of check outed item, discount, & total payment/]
+	W --> X[insert item data to database with insert_to_table]
+	X --> Y([finish])
 ```
 ## How To Run This Program
 To get started with this project, please follow the steps below:
@@ -147,8 +155,9 @@ def add_item(self, name, qty, price):
             new_item["quantity"] = int(qty)
             new_item["amount"] = int(price) * int(qty)
             self.cart.append(new_item)
+            print(f'{name.title()} is sucessfully added to cart!')
         except:
-            print("\nprice and quantity must be in integer and not smaller than 0!\n")
+            print("\nprice and quantity must be integer and not smaller than 0!\n")
 
 ```
 #### check_order()
@@ -160,15 +169,12 @@ def check_order(self):
     Args: -
     Return: -
     """
-    if len(self.cart) == 0:
-        print("The cart is empty. Please add an item.")
-    else:
-        show_date_time()
-        table = PrettyTable()
-        table.field_names = self.cart[0].keys()
-        for item in self.cart:
-            table.add_row([item["name"], change_currency(item["price"]), item["quantity"], change_currency(item["amount"])])
-        print(table)
+    show_date_time()
+    table = PrettyTable()
+    table.field_names = self.cart[0].keys()
+    for item in self.cart:
+        table.add_row([item["name"], change_currency(item["price"]), item["quantity"], change_currency(item["amount"])])
+    print(table)
 ```
 #### update_item_name()
 ```python
@@ -283,25 +289,22 @@ def check_out(self):
     A method for: 
         -showing check outed items
         -calculate discount and total payment
-            if total payment > 500.0000, user will get 7% discount.
-            if total payment > 300.0000, user will get 6% discount.
-            if total payment > 200.0000, user will get 5% discount.
+            if item amount > 500.0000, user will get 7% discount.
+            if item amount > 300.0000, user will get 6% discount.
+            if item amount > 200.0000, user will get 5% discount.
 
     Args: -
     Return: -
     """
-    if len(self.cart) == 0:
-        print("The cart is empty. Please add an item.")
-    else:
-        for item in self.cart:
-            if item["amount"] > 500_000:
-                item.update(disc_calculation(0.07, item["amount"]))
-            elif item["amount"] > 300_000:
-                item.update(disc_calculation(0.06, item["amount"]))
-            elif item["amount"] > 200_000:
-                item.update(disc_calculation(0.05, item["amount"]))
-            else:
-                item.update(disc_calculation(0, item["amount"]))
+    for item in self.cart:
+        if item["amount"] > 500_000:
+            item.update(disc_calculation(0.07, item["amount"]))
+        elif item["amount"] > 300_000:
+            item.update(disc_calculation(0.06, item["amount"]))
+        elif item["amount"] > 200_000:
+            item.update(disc_calculation(0.05, item["amount"]))
+        else:
+            item.update(disc_calculation(0, item["amount"]))
 
     total_payment = 0 
     table = PrettyTable()

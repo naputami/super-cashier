@@ -78,8 +78,9 @@ class Transaction:
                 new_item["quantity"] = int(qty)
                 new_item["amount"] = int(price) * int(qty)
                 self.cart.append(new_item)
+                print(f'{name.title()} is sucessfully added to cart!')
             except:
-                print("\nprice and quantity must be in integer and not smaller than 0!\n")
+                print("\nprice and quantity must be integer and not smaller than 0!\n")
 
     def check_order(self):
         """
@@ -88,15 +89,12 @@ class Transaction:
         Args: -
         Return: -
         """
-        if len(self.cart) == 0:
-            print("The cart is empty. Please add an item.")
-        else:
-            show_date_time()
-            table = PrettyTable()
-            table.field_names = self.cart[0].keys()
-            for item in self.cart:
-                table.add_row([item["name"], change_currency(item["price"]), item["quantity"], change_currency(item["amount"])])
-            print(table)
+        show_date_time()
+        table = PrettyTable()
+        table.field_names = self.cart[0].keys()
+        for item in self.cart:
+            table.add_row([item["name"], change_currency(item["price"]), item["quantity"], change_currency(item["amount"])])
+        print(table)
             
     
     def update_item_name(self, old_name, new_name):
@@ -203,25 +201,22 @@ class Transaction:
         A method for: 
             -showing check outed items
             -calculate discount and total payment
-                if total payment > 500.0000, user will get 7% discount.
-                if total payment > 300.0000, user will get 6% discount.
-                if total payment > 200.0000, user will get 5% discount.
+                if item amount > 500.0000, user will get 7% discount.
+                if item amount > 300.0000, user will get 6% discount.
+                if item amount > 200.0000, user will get 5% discount.
 
         Args: -
         Return: -
         """
-        if len(self.cart) == 0:
-            print("The cart is empty. Please add an item.")
-        else:
-            for item in self.cart:
-                if item["amount"] > 500_000:
-                    item.update(disc_calculation(0.07, item["amount"]))
-                elif item["amount"] > 300_000:
-                    item.update(disc_calculation(0.06, item["amount"]))
-                elif item["amount"] > 200_000:
-                    item.update(disc_calculation(0.05, item["amount"]))
-                else:
-                    item.update(disc_calculation(0, item["amount"]))
+        for item in self.cart:
+            if item["amount"] > 500_000:
+                item.update(disc_calculation(0.07, item["amount"]))
+            elif item["amount"] > 300_000:
+                item.update(disc_calculation(0.06, item["amount"]))
+            elif item["amount"] > 200_000:
+                item.update(disc_calculation(0.05, item["amount"]))
+            else:
+                item.update(disc_calculation(0, item["amount"]))
 
         total_payment = 0 
         table = PrettyTable()
