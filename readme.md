@@ -56,20 +56,6 @@ flowchart TD
 	W --> X[insert item data to database with insert_to_table]
 	X --> Y([finish])
 ```
-## How To Run This Program
-To get started with this project, please follow the steps below:
-1. Install the required dependencies by ensuring that Python, SQLite3, and PrettyTable are installed on your local computer.
-2. Clone this repository to your local machine using your preferred method. This can be done by running the following command in your terminal  
-```
-git clone https://github.com/naputami/SuperCashier-Pacmann.git
-```
-3. Once the repository is cloned, navigate to the project's directory in your terminal.
-4. To launch the program, run the main.py file using the following command:  
-```
-python main.py
-```
-By following these steps, you will be able to install the necessary dependencies, clone the repository, and run the program on your local machine.
-
 ## Code Explanation
 ### Script
 1. transaction.py: modlue for transaction class which contains functions for fulfilling program's objectives.
@@ -390,9 +376,45 @@ Output:
 Output:  
 ![test case 3](img/test_case_3.jpg)
 
-4. After finishing shopping, the program will calculate total payment and discount.  
-Output:  
+4. Customer adds new items to cart as follow:    
+- item name: Ayam bakar, qty: 2, unit price: 20000
+- item name: Sabun mandi, qty: 3, unit price: 15000
+- item name: Mainan mobil, qty: 1, unit price: 200000
+- item name: Mi instan, qty: 3, unit price: 1500  
+Output:   
 ![test case 4](img/test_case_4.jpg)
+
+5. Customer changes "Sabun Mandi to Sabun Cuci".    
+Output:  
+![test case 5](img/test_case_5.jpg)
+
+6. Customer changes "Ayam bakar" price to 25000.    
+Output:  
+![test case 6](img/test_case_6.jpg)
+
+7. Customer changes "Mainan mobil quantity" to 2.    
+Output:    
+![test case 7](img/test_case_7.jpg)
+
+8. After finishing shopping, the program will calculate total payment and discount.  
+Output:  
+![test case 8](img/test_case_8.jpg)    
+Check outed items are inserted to checkout.db   
+![check out db](img/test_case_8_db.jpg)
+
+## How To Run This Program
+To get started with this project, please follow the steps below:
+1. Install the required dependencies by ensuring that Python, SQLite3, and PrettyTable are installed on your local computer.
+2. Clone this repository to your local machine using your preferred method. This can be done by running the following command in your terminal  
+```
+git clone https://github.com/naputami/SuperCashier-Pacmann.git
+```
+3. Once the repository is cloned, navigate to the project's directory in your terminal.
+4. To launch the program, run the main.py file using the following command:  
+```
+python main.py
+```
+By following these steps, you will be able to install the necessary dependencies, clone the repository, and run the program on your local machine.
 ## Conclusion
 The program successfully achieves its intended objectives and runs as expected. Nevertheless, there are areas identified for improvement:  
 1. Database Enhancement: Enhance the database to allow for more detailed storage of customer and transaction data.

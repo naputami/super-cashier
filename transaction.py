@@ -107,7 +107,7 @@ class Transaction:
         """
         item_index = find_index(self.cart, old_name)
         if item_index != -1:
-            self.cart[item_index]["name"] = new_name
+            self.cart[item_index]["name"] = new_name.title()
             print(f'{old_name.title()} changed to {new_name.title()}')
         else:
             print(f'Can\'t found {old_name.title()} in cart. Please input another item name')
