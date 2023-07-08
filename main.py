@@ -5,10 +5,18 @@ print("=" * 30)
 print("Welcome to SuperCashier")
 print("=" * 30)
 
-customer_id = input("Enter your customer id here: ")
-print(f'Your customer id: {customer_id}')
-trnsct_123 = Transaction()
+#looping for transaction_id input
+while True:
+    try:
+        transaction_id = int(input("Enter your transaction id here: "))
+    except:
+        print("Transaction id must be a number")
+    else:
+        print(f'Your transaction id: {transaction_id}')
+        trnsct_123 = Transaction(transaction_id)
+        break
 
+#looping for running program's menu
 while True:
     print('''
     Please select the menu.

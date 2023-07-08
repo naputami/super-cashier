@@ -66,10 +66,12 @@ flowchart TD
 ```python
 def __init__(self):
     """
-    Constructor for creating an attribute named cart. 
-    The attribute is a list of dictionaries which contains information about item name, price, quantity, and amount
+    Constructor for creating attributes: cart and transaction_id. 
+    cart is a list of dictionaries which contains information about item name, price, quantity, and amount.
+    transaction_id is an integer for customer identification.
     """
     self.cart = []
+    self.transacton_id = transaction_id
 ```
 #### insert_to_table()
 ```python
@@ -124,26 +126,31 @@ def add_item(self, name, qty, price):
     if name == "":
         print("Item name cannot be empty.")
     else:
-        #create dictionary for new item
-        new_item = {}
-        new_item["name"] = name
-        
-        #error handling for casting quantity and price from string to integer.
-        try:
-            int_price = int(price)
-            int_qty = int(qty)
-
-            #raise exception if price or quantity smaller than 0
-            if int_price < 1 or int_qty < 1:
-                raise Exception
+        #checking wheather inputed item already exist in cart
+        item_index = find_index(self.cart, name)
+        if item_index != -1:
+            print(f'{name.title()} already existed in cart. Go to update item menu to change name, price, or qty')
+        else:
+            #create dictionary for new item
+            new_item = {}
+            new_item["name"] = name.title()
             
-            new_item["price"] = int(price)
-            new_item["quantity"] = int(qty)
-            new_item["amount"] = int(price) * int(qty)
-            self.cart.append(new_item)
-            print(f'{name.title()} is sucessfully added to cart!')
-        except:
-            print("\nprice and quantity must be integer and not smaller than 0!\n")
+            #error handling for casting quantity and price from string to integer.
+            try:
+                int_price = int(price)
+                int_qty = int(qty)
+
+                #raise exception if price or quantity smaller than 0
+                if int_price < 1 or int_qty < 1:
+                    raise Exception
+                
+                new_item["price"] = int(price)
+                new_item["quantity"] = int(qty)
+                new_item["amount"] = int(price) * int(qty)
+                self.cart.append(new_item)
+                print(f'{name.title()} is sucessfully added to cart!')
+            except:
+                print("\nprice and quantity must be integer and not smaller than 0!\n")
 
 ```
 #### check_order()
