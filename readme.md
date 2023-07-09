@@ -316,7 +316,7 @@ def check_out(self):
     print(f'Total payment: {change_currency(total_payment)}')
     print("Thank you for shopping here")
 ```
-### show_date_time()
+#### show_date_time()
 ```python
 def show_date_time():
     """
@@ -329,7 +329,7 @@ def show_date_time():
     formatted_date = now.strftime("%Y-%m-%d %H:%M:%S")
     print(f'Date and Time: {formatted_date}\n')
 ```
-### change_currency()
+#### change_currency()
 ```python
 def change_currency(price):
     """
@@ -340,7 +340,7 @@ def change_currency(price):
     """
     return locale.currency(price, grouping=True)
 ```
-### find_index()
+#### find_index()
 ```python
 def find_index(cart, name):
     """
@@ -355,7 +355,7 @@ def find_index(cart, name):
             return cart.index(item)
     return -1 
 ```
-### disc_calculation()
+#### disc_calculation()
 ```python
 def disc_calculation(percent, amount):
     """
