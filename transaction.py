@@ -208,9 +208,9 @@ class Transaction:
         A method for: 
             -showing check outed items
             -calculate discount and total payment
-                if item amount > 500.0000, user will get 7% discount.
-                if item amount > 300.0000, user will get 6% discount.
-                if item amount > 200.0000, user will get 5% discount.
+                if item amount > 500.000, user will get 7% discount.
+                if item amount > 300.000, user will get 6% discount.
+                if item amount > 200.000, user will get 5% discount.
 
         Args: -
         Return: -

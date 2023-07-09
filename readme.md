@@ -1,9 +1,9 @@
 # Super Cashier
 
 ## Background
-The Super Cashier App enables customers to conveniently add items, quantities, and unit prices. 
+The Super Cashier App enables customers to conveniently add and update items in cart. 
 The app performs automatic calculations of the total price and applicable discounts during the checkout process.
-The Supermarket Self-Service Cashier App also provides functionality for inputting the name, unit price, and quantity of the checkouted items into an SQLite3 database, ensuring seamless record-keeping and data management.
+The Supermarket Self-Service Cashier App also provides functionality for inputting the name, unit price, quantity, discount, and discounted amount of the checkouted items into an SQLite3 database, ensuring seamless record-keeping and data management.
 
 ## Requirements
 To ensure proper functionality, the Super Cashier App requires the following packages/languanges to be installed:  
@@ -17,7 +17,10 @@ The objectives of the program are as follows:
 2. Deleting an item or all items from the cart.
 3. Updating the name, price, or quantity of items in the cart.
 4. Displaying the items currently in the cart.
-5. Calculating total payment and discount.
+5. Calculating total payment and discount.  
+    * if item amount > 500.000, user will get 7% discount.
+    * if item amount > 300.000, user will get 6% discount.
+    * if item amount > 200.000, user will get 5% discount.
 6. Inserting name, quantity, and price of check outed item to SQLite database.
 
 
@@ -58,7 +61,7 @@ flowchart TD
 ```
 ## Code Explanation
 ### Script
-1. transaction.py: modlue for transaction class which contains functions for fulfilling program's objectives.
+1. transaction.py: module for transaction class which contains functions for fulfilling program's objectives.
 2. helpers.py: module for helper functions
 3. main.py: module for initializing transaction class and displaying menu to user
 ### snippet code
@@ -282,9 +285,9 @@ def check_out(self):
     A method for: 
         -showing check outed items
         -calculate discount and total payment
-            if item amount > 500.0000, user will get 7% discount.
-            if item amount > 300.0000, user will get 6% discount.
-            if item amount > 200.0000, user will get 5% discount.
+            if item amount > 500.000, user will get 7% discount.
+            if item amount > 300.000, user will get 6% discount.
+            if item amount > 200.000, user will get 5% discount.
 
     Args: -
     Return: -
